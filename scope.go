@@ -111,13 +111,19 @@ func (scope *Scope) Fields() []*Field {
 			isStruct           = indirectScopeValue.Kind() == reflect.Struct
 		)
 
+		fmt.Println("### indirectScopeValue:", indirectScopeValue)
+
 		for _, structField := range scope.GetModelStruct().StructFields {
+			fmt.Println("### structField:", structField)
 			if isStruct {
 				fieldValue := indirectScopeValue
 				for _, name := range structField.Names {
+					fmt.Println("### name:", name)
 					if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
+						fmt.Println("### fieldValue.IsNil")
 						fieldValue.Set(reflect.New(fieldValue.Type().Elem()))
 					}
+					fmt.Println("### reflect.Indirect(fieldValue):", reflect.Indirect(fieldValue))
 					fieldValue = reflect.Indirect(fieldValue).FieldByName(name)
 				}
 				fields = append(fields, &Field{StructField: structField, Field: fieldValue, IsBlank: isBlank(fieldValue)})
@@ -167,6 +173,7 @@ func (scope *Scope) PrimaryField() *Field {
 				return field
 			}
 		}
+		fmt.Println("### len(scope.PrimaryFields()):", scope.PrimaryFields())
 		return scope.PrimaryFields()[0]
 	}
 	return nil
